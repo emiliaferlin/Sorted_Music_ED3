@@ -27,8 +27,8 @@ def ler_arquivo_json(caminho_arquivo):
         
 
 
-caminho_lista = 'C:/Users/Mili/Desktop/songs4JSONvector.json'
-caminho_linhas = 'C:/Users/Mili/Desktop/songs4LineByLine.json'
+caminho_lista = 'songs4JSONvector.json'
+caminho_linhas = 'songs4LineByLine.json'
 
 dados_lista = ler_arquivo_json(caminho_lista)
 dados_linhas = ler_arquivo_json(caminho_linhas)
@@ -120,5 +120,4 @@ if arquivo:
     arquivo.close()
         
 end_time_Guru99 = time.time()
-print("Dados gravados em 'dados_ordenados.txt'")
-print("Tempo final gravou: ", end_time_Guru99 - start_time_Guru99)
+print("Tempo final ao gravar dados: ", end_time_Guru99 - start_time_Guru99)
