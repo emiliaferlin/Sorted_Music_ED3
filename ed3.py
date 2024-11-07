@@ -1,47 +1,44 @@
 import json
 import time
 
-def ler_arquivo_lista(caminho_arquivo):
-    with open(caminho_arquivo, 'r', encoding='utf-8') as arquivo:
+def lerArquivoLista(caminhoArquivo):
+    with open(caminhoArquivo, 'r', encoding='utf-8') as arquivo:
         dados = json.load(arquivo)
     return dados
 
-def ler_arquivo_linhas(caminho_arquivo):
+def lerArquivoLinha(caminhoArquivo):
     dados = []
-    with open(caminho_arquivo, 'r', encoding='utf-8') as arquivo:
+    with open(caminhoArquivo, 'r', encoding='utf-8') as arquivo:
         for linha in arquivo:
             if linha.strip(): # Ignorar linhas vazias
                 dados.append(json.loads(linha))
     return dados
 
-def ler_arquivo_json(caminho_arquivo):
-    with open(caminho_arquivo, 'r', encoding='utf-8') as arquivo:
+def lerArquivoJson(caminhoArquivo):
+    with open(caminhoArquivo, 'r', encoding='utf-8') as arquivo:
         primeira_linha = arquivo.readline().strip()
         
         if primeira_linha.startswith('['):
             arquivo.seek(0)  # Retorna ao início do arquivo
-            return ler_arquivo_lista(caminho_arquivo)
+            return lerArquivoLista(caminhoArquivo)
         else:  # JSON em linhas separadas
             arquivo.seek(0)
-            return ler_arquivo_linhas(caminho_arquivo)
+            return lerArquivoLinha(caminhoArquivo)
         
 
+dadosLista = lerArquivoJson("songs4JSONvector.json")
+#Só uso um tipo de dado, mas ambos estão sendo lidos corretamente
+#dadosLinha = lerArquivoJson("songs4LineByLine.json")
 
-caminho_lista = 'songs4JSONvector.json'
-caminho_linhas = 'songs4LineByLine.json'
-
-dados_lista = ler_arquivo_json(caminho_lista)
-dados_linhas = ler_arquivo_json(caminho_linhas)
 # Ordenando a lista de dicionários pela chave 'arq' e 'ordem'
-
 ### Double Sort (Dupla Ordenação) usando sorted()
-start_time_sorted = time.time()
-dados_ordenados = sorted(dados_lista, key=lambda x: (x['arq'], x['ordem']))
-end_time_sorted = time.time()
-print(f"Sorted (dupla ordenação) demorou {end_time_sorted - start_time_sorted:.6f} segundos.")
+startTimeSorted = time.time()
+dadosOrdenados = sorted(dadosLista, key=lambda x: (x['arq'], x['ordem']))
+endTimeSorted = time.time()
+print(f"Sorted (dupla ordenação) demorou {endTimeSorted - startTimeSorted:.6f} segundos.")
 
 # Função para gerar a chave de ordenação com base nas chaves 'arq' e 'ordem'
-def chave_ordenacao(item):
+def chaveOrdenacao(item):
     return (item['arq'], item['ordem'])
 
 ### Quicksort
@@ -62,11 +59,11 @@ def partition(arr, low, high, key_func):
     return i + 1
 
 # Executando o Quicksort
-dados_quicksort = dados_lista.copy()
-start_time_quicksort = time.time()
-quicksort(dados_quicksort, 0, len(dados_quicksort) - 1, chave_ordenacao)
-end_time_quicksort = time.time()
-print(f"Quicksort demorou {end_time_quicksort - start_time_quicksort:.6f} segundos.")
+dadosQuicksort = dadosLista.copy()
+startTimeQuicksort = time.time()
+quicksort(dadosQuicksort, 0, len(dadosQuicksort) - 1, chaveOrdenacao)
+endTimeQuicksort = time.time()
+print(f"Quicksort demorou {endTimeQuicksort - startTimeQuicksort:.6f} segundos.")
 
 ### Heapsort
 def heapsort(arr, key_func):
@@ -90,34 +87,62 @@ def heapify(arr, n, i, key_func):
         heapify(arr, n, largest, key_func)
 
 # Executando o Heapsort
-dados_heapsort = dados_lista.copy()
-start_time_heapsort = time.time()
-heapsort(dados_heapsort, chave_ordenacao)
-end_time_heapsort = time.time()
-print(f"Heapsort demorou {end_time_heapsort - start_time_heapsort:.6f} segundos.")
+dadosHeapsort = dadosLista.copy()
+startTimeHeapsort = time.time()
+heapsort(dadosHeapsort, chaveOrdenacao)
+endTimeHeapsort = time.time()
+print(f"Heapsort demorou {endTimeHeapsort - startTimeHeapsort:.6f} segundos.")
 
-start_time_Guru99 = time.time()
-arq_anterior = None  # Inicializa uma variável para o controle do 'arq' anterior
-arquivo = None  # Inicializa a variável do arquivo para que possa ser fechado corretamente
+def meuSort(arr, key):
+    valorMax = max(arr, key=key)
+    valorMin = min(arr, key=key)
+    tamanhoElementos = key(valorMax) - key(valorMin) + 1
 
-for item in dados_ordenados:
-    # Verifica se o 'arq' mudou
-    if item['arq'] != arq_anterior:
-        # Fecha o arquivo anterior, se houver
+    # Array de contagem e array de saída para os elementos ordenados
+    contador = [0] * tamanhoElementos
+    saida = [None] * len(arr)
+
+    # Contagem de cada elemento baseado na chave
+    for elem in arr:
+        contador[key(elem) - key(valorMin)] += 1
+
+    # Acumulação para posição final dos elementos
+    for i in range(1, len(contador)):
+        contador[i] += contador[i - 1]
+
+    # Ordena os elementos no array de saída
+    for elem in reversed(arr):
+        index = key(elem) - key(valorMin)
+        saida[contador[index] - 1] = elem
+        contador[index] -= 1
+
+    return saida
+
+startTime = time.time()
+# Ordena pela chave 'ordem' primeiro
+minhaOrdenacao = meuSort(dadosLista, key=lambda x: x["ordem"])
+# Ordena pela chave 'arq' mantendo a estabilidade da ordem de 'ordem'
+minhaOrdenacaoFinal = meuSort(minhaOrdenacao, key=lambda x: x["arq"])
+endTime = time.time()
+print(f"Minha ordenação manual demorou {endTime - startTime:.6f} segundos.")
+
+
+startTimeLeitura = time.time()
+arquivoAnterior = None 
+arquivo = None
+#Escreve o resultado em cada arquivo
+for item in minhaOrdenacaoFinal:
+    if item['arq'] != arquivoAnterior:
         if arquivo:
             arquivo.close()
-        
-        # Abre um novo arquivo com o nome baseado em 'arq'
         nome_arquivo = f"{item['arq']}.txt"
         arquivo = open(nome_arquivo, "w")
-        arq_anterior = item['arq']
-
-    # Escreve as notas no arquivo atual
+        arquivoAnterior = item['arq']
     arquivo.write(f"{item['notas']}\n")
 
 # Fecha o último arquivo após o loop
 if arquivo:
     arquivo.close()
         
-end_time_Guru99 = time.time()
-print("Tempo final ao gravar dados: ", end_time_Guru99 - start_time_Guru99)
+endTimeLeitura = time.time()
+print("Tempo final ao gravar dados: ", endTimeLeitura - startTimeLeitura)
