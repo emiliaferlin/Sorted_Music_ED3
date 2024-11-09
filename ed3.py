@@ -27,10 +27,52 @@ def lerArquivoJson(caminhoArquivo):
         
 
 dadosLista = lerArquivoJson("songs4JSONvector.json")
-#Só uso um tipo de dado, mas ambos estão sendo lidos corretamente
-#dadosLinha = lerArquivoJson("songs4LineByLine.json")
+dadosLinha = lerArquivoJson("songs4LineByLine.json")
 
-# Ordenando a lista de dicionários pela chave 'arq' e 'ordem'
+# Ordenando dadosLista
+# Função Radix Sort para ordenar pela chave 'ordem' e depois 'arq'
+def countingSortRadix(arr, exp, key_func):
+    n = len(arr)
+    output = [0] * n
+    count = [0] * 10
+
+    for i in range(n):
+        index = (key_func(arr[i]) // exp) % 10
+        count[index] += 1
+
+    for i in range(1, 10):
+        count[i] += count[i - 1]
+
+    i = n - 1
+    while i >= 0:
+        index = (key_func(arr[i]) // exp) % 10
+        output[count[index] - 1] = arr[i]
+        count[index] -= 1
+        i -= 1
+
+    for i in range(n):
+        arr[i] = output[i]
+
+def radixSort(arr, key_func):
+    max_val = key_func(max(arr, key=key_func))
+    exp = 1
+    while max_val // exp > 0:
+        countingSortRadix(arr, exp, key_func)
+        exp *= 10
+
+# Ordenando a lista de dicionários pela chave 'ordem' e depois 'arq' usando Radix Sort
+dadosRadix = dadosLista.copy()
+startTimeRadix = time.time()
+
+# Primeiro, ordenamos pela chave 'ordem'
+radixSort(dadosRadix, key_func=lambda x: x['ordem'])
+
+# Depois, ordenamos pela chave 'arq' para manter a estabilidade
+radixSort(dadosRadix, key_func=lambda x: x['arq'])
+
+endTimeRadix = time.time()
+print(f"Radix Sort demorou {endTimeRadix - startTimeRadix:.6f} segundos.")
+
 ### Double Sort (Dupla Ordenação) usando sorted()
 startTimeSorted = time.time()
 dadosOrdenados = sorted(dadosLista, key=lambda x: (x['arq'], x['ordem']))
@@ -58,7 +100,6 @@ def partition(arr, low, high, key_func):
     arr[i + 1], arr[high] = arr[high], arr[i + 1]
     return i + 1
 
-# Executando o Quicksort
 dadosQuicksort = dadosLista.copy()
 startTimeQuicksort = time.time()
 quicksort(dadosQuicksort, 0, len(dadosQuicksort) - 1, chaveOrdenacao)
@@ -86,7 +127,6 @@ def heapify(arr, n, i, key_func):
         arr[i], arr[largest] = arr[largest], arr[i]
         heapify(arr, n, largest, key_func)
 
-# Executando o Heapsort
 dadosHeapsort = dadosLista.copy()
 startTimeHeapsort = time.time()
 heapsort(dadosHeapsort, chaveOrdenacao)
