@@ -32,6 +32,7 @@ dadosLinha = lerArquivoJson("songs4LineByLine.json")
 def countingSort(arr, key):
     valorMax = max(arr, key=key)
     valorMin = min(arr, key=key)
+    #aqui determina o numero de elemntos a serem trabalhados
     tamanhoElementos = key(valorMax) - key(valorMin) + 1
 
     # Array de contagem e array de saída para os elementos ordenados
@@ -39,14 +40,20 @@ def countingSort(arr, key):
     saida = [None] * len(arr)
 
     # Contagem de cada elemento baseado na chave
+    # Quantas vezes cada elemento (ajustado pela função key) ocorre em arr
     for elem in arr:
         contador[key(elem) - key(valorMin)] += 1
 
     # Acumulação para posição final dos elementos
+    # Cada posição armazena a posição final de cada elemento
     for i in range(1, len(contador)):
         contador[i] += contador[i - 1]
 
     # Ordena os elementos no array de saída
+    #Para cada elemento de arr (começando do último para manter a estabilidade), 
+    # ele encontra a posição correta usando o índice acumulado e armazena o elemento em saida.
+    #O contador para o índice é decrementado após cada uso, garantindo que os 
+    # próximos elementos iguais sejam colocados na posição anterior.
     for elem in reversed(arr):
         index = key(elem) - key(valorMin)
         saida[contador[index] - 1] = elem
@@ -54,10 +61,9 @@ def countingSort(arr, key):
 
     return saida
 
+# Copia dos dados e mede o tempo de execução
 startTime = time.time()
-# Ordena pela chave 'ordem' primeiro
 minhaOrdenacao = countingSort(dadosLista, key=lambda x: x["ordem"])
-# Ordena pela chave 'arq' mantendo a estabilidade da ordem de 'ordem'
 minhaOrdenacaoFinal = countingSort(minhaOrdenacao, key=lambda x: x["arq"])
 endTime = time.time()
 print(f"Minha ordenação demorou {endTime - startTime:.6f} segundos.")

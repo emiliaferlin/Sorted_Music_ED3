@@ -2,13 +2,8 @@ import sys
 import os
 import time
 
-# Adiciona o diretório raiz (Sorted_Music_ED3) ao sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
-
-# Agora você pode importar as funções do main.py
 from main import lerArquivoJson
-
-# Carregar dados usando a função de main.py
 dadosLista = lerArquivoJson("songs4JSONvector.json")
 
 # Função para gerar a chave de ordenação com base nas chaves 'arq' e 'ordem'
@@ -36,10 +31,8 @@ def heapify(arr, n, i, key_func):
         arr[i], arr[largest] = arr[largest], arr[i]
         heapify(arr, n, largest, key_func)
 
-# Cria uma cópia dos dados para ordenar com o HeapSort
+# Copia dos dados e mede o tempo de execução
 dadosHeapSort = dadosLista.copy()
-
-# Calcula o tempo de execução do HeapSort
 startTimeHeapSort = time.time()
 heapSort(dadosHeapSort, chaveOrdenacao)
 endTimeHeapSort = time.time()

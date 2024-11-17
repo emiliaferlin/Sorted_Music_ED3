@@ -2,13 +2,8 @@ import sys
 import os
 import time
 
-# Adiciona o diretório raiz (Sorted_Music_ED3) ao sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
-
-# Agora você pode importar as funções do main.py
 from main import lerArquivoJson
-
-# Carregar dados usando a função de main.py
 dadosLista = lerArquivoJson("songs4JSONvector.json")
 
 # Função de contagem para um dígito específico (usada pelo Radix Sort)
@@ -47,14 +42,11 @@ def radixSort(arr, key_func):
         countingSortExp(arr, exp, key_func)
         exp *= 10
 
-# Cria uma cópia dos dados para ordenar com o Radix Sort
-dadosRadix = dadosLista.copy()
 
-# Medição do tempo de execução do Radix Sort
+# Copia dos dados e mede o tempo de execução
+dadosRadix = dadosLista.copy()
 startTimeRadix = time.time()
-# Primeira ordenação pela chave 'ordem' (valor numérico)
 radixSort(dadosRadix, key_func=lambda x: x['ordem'])
-# Ordena por 'arq' para manter a estabilidade (usando outro método, pois 'arq' não é numérico)
 dadosRadix.sort(key=lambda x: x['arq'])
 endTimeRadix = time.time()
 print(f"Radix Sort demorou {endTimeRadix - startTimeRadix:.6f} segundos.")

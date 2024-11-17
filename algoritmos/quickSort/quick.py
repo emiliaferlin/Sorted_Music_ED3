@@ -2,13 +2,9 @@ import sys
 import os
 import time
 
-# Adiciona o diretório raiz (Sorted_Music_ED3) ao sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
-
-# Agora você pode importar as funções do main.py
 from main import lerArquivoJson
 
-# Carregar dados usando a função de main.py
 dadosLista = lerArquivoJson("songs4JSONvector.json")
 
 # Função para gerar a chave de ordenação com base nas chaves 'arq' e 'ordem'
