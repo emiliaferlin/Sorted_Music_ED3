@@ -35,8 +35,9 @@ def countingSort(arr, key):
     #aqui determina o numero de elemntos a serem trabalhados
     tamanhoElementos = key(valorMax) - key(valorMin) + 1
 
-    # Array de contagem e array de saída para os elementos ordenados
+    # Array de contagem     
     contador = [0] * tamanhoElementos
+    # Array de saída para os elementos ordenados
     saida = [None] * len(arr)
 
     # Contagem de cada elemento baseado na chave
@@ -45,14 +46,14 @@ def countingSort(arr, key):
         contador[key(elem) - key(valorMin)] += 1
 
     # Acumulação para posição final dos elementos
-    # Cada posição armazena a posição final de cada elemento
     for i in range(1, len(contador)):
+        # Somar a frequência atual (contador[i]) com a frequência anterior (contador[i - 1]).
+        # Isso dá a posição final de cada elemento ou o limite superior de onde ele aparece na lista ordenada.
         contador[i] += contador[i - 1]
 
     # Ordena os elementos no array de saída
-    #Para cada elemento de arr (começando do último para manter a estabilidade), 
-    # ele encontra a posição correta usando o índice acumulado e armazena o elemento em saida.
-    #O contador para o índice é decrementado após cada uso, garantindo que os 
+    # Ele encontra a posição correta usando o índice acumulado e armazena o elemento em saida.
+    # OBS: O contador para o índice é decrementado após cada uso, garantindo que os 
     # próximos elementos iguais sejam colocados na posição anterior.
     for elem in reversed(arr):
         index = key(elem) - key(valorMin)
