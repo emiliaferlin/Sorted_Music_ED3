@@ -1,25 +1,13 @@
-import re
 import time
-import os
-
-def carregaTexto(texto):
-    # Remove caracteres extras e mantém apenas letras e números
-    linhas = texto.split("\n")
-    dadosProcessados = [re.sub(r'[^a-zA-Z0-9]', '', linha.strip()) for linha in linhas if linha.strip()]
-    return sorted(dadosProcessados)
 
 def buscaTabelaHash(lista, valor):
-    tabelaHash = {}
+    tabela_hash = {}
     for i, item in enumerate(lista):
-        if item.startswith(valor):
-            if valor not in tabelaHash:
-                tabelaHash[valor] = []
-            tabelaHash[valor].append(i)
-
-    if valor in tabelaHash:
-        return sorted(tabelaHash[valor])
-    else:
-        return []
+        prefix = item[:len(valor)]
+        if prefix not in tabela_hash:
+            tabela_hash[prefix] = []
+        tabela_hash[prefix].append(i)
+    return tabela_hash.get(valor, [])
 
 def main():
     valorBusca = input("Digite a nota que deseja encontrar: ").strip()
@@ -27,20 +15,20 @@ def main():
         print("Erro: Nenhum valor foi inserido. Por favor, tente novamente.")
         exit()
 
-    # Processa o arquivo e realiza a busca
+    # Processa o arquivo e realiza a busca por linha
     with open('52.txt', 'r') as file:
-        arquivo = file.read()
+        linhas = file.readlines()  # Lê cada linha do arquivo como um item de lista
 
     inicioTempo = time.time()
-
-    dadosOrdenados = carregaTexto(arquivo)
-    posicoes = buscaTabelaHash(dadosOrdenados, valorBusca)
+    
+    posicoes = buscaTabelaHash(linhas, valorBusca)
 
     fimTempo = time.time()
 
     # Exibe os resultados
-    print(f"Minha ordenação demorou {fimTempo - inicioTempo:.6f} segundos.")
+    print(f"Minha ordenação Hash demorou {fimTempo - inicioTempo:.6f} segundos.")
     print(f"Nota: '{valorBusca}' \nPresente: {'Sim' if posicoes else 'Não'} \nQuantidade: {len(posicoes)} \nPosições: {posicoes}")
 
 if __name__ == "__main__":
     main()
+

@@ -1,26 +1,23 @@
-import re
 import time
-import os
-
-# Função para processar e ordenar os dados
-def carregaTexto(texto):
-    linhas = texto.split("\n")
-    return sorted([re.sub(r'[^a-zA-Z0-9]', '', linha.strip()) for linha in linhas if linha.strip()])
 
 # Função de busca binária
 def buscaBinaria(lista, valor):
-    inicio, fim = 0, len(lista) - 1
+    inicio = 0 
+    fim = len(lista) - 1
     posicoes = []
 
     while inicio <= fim:
         meio = (inicio + fim) // 2
+        # Verificar se uma string começa com um determinado prefixo ou sequência do valor.
         if lista[meio].startswith(valor):
             # Encontra todas as ocorrências
             posicoes.append(meio)
+            # Busca ocorrências anteriores ao meio
             i = meio - 1
             while i >= 0 and lista[i].startswith(valor):
                 posicoes.append(i)
                 i -= 1
+            # Busca ocorrências posteriores ao meio
             i = meio + 1
             while i < len(lista) and lista[i].startswith(valor):
                 posicoes.append(i)
@@ -36,26 +33,26 @@ def buscaBinaria(lista, valor):
 
 def main():
     valorBusca = input("Digite a nota que deseja encontrar: ").strip()
-    
     if not valorBusca:
         print("Erro: Nenhum valor foi inserido. Por favor, tente novamente.")
-        exit()
+        return
 
-    # Processa o arquivo e realiza a busca
+    # Processa o arquivo e realiza a busca por linha
     with open('52.txt', 'r') as file:
-        arquivo = file.read()
+        linhas = file.readlines()  # Lê cada linha do arquivo como um item de lista
+
+    # Ordena a lista para busca binária
+    linhas_ordenadas = sorted(linhas)
 
     inicioTempo = time.time()
-
-    dadosOrdenados = carregaTexto(arquivo)
-    buscaEncontrada = buscaBinaria(dadosOrdenados, valorBusca)
+    
+    posicoes = buscaBinaria(linhas_ordenadas, valorBusca)
 
     fimTempo = time.time()
 
     # Exibe os resultados
-    print(f"Minha ordenação demorou {fimTempo - inicioTempo:.6f} segundos.")
-    print(f"Nota: '{valorBusca}' \nPresente: {'Sim' if buscaEncontrada else 'Não'} \nQuantidade: {len(buscaEncontrada)} \nPosições: {buscaEncontrada}")
+    print(f"Minha busca binária demorou {fimTempo - inicioTempo:.6f} segundos.")
+    print(f"Nota: '{valorBusca}' \nPresente: {'Sim' if posicoes else 'Não'} \nQuantidade: {len(posicoes)} \nPosições: {posicoes}")
 
 if __name__ == "__main__":
     main()
-
